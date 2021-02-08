@@ -62,49 +62,54 @@ class ContactsDemon {
     }
     const dataOut =
       prevDataLength != this.data.length
-        ? "Файл перезаписано"
-        : "Помилка запису файла";
+        ? true
+        : false;
+        // ? "Файл перезаписано"
+        // : "Помилка запису файла";
     return dataOut;
   };
 
   listContacts = async () => {
     if ((await this.getFile()) && !this.error) {
-      console.table(this.data);
+      return this.data;
     } else {
-      console.log(this.error);
+      return this.error;
     }
   };
 
   getContactById = async (contactId) => {
+    let dataOut = null;
     if ((await this.getFile()) && !this.error) {
-      const dataOut = this.data.filter((el) => {
+      dataOut = this.data.filter((el) => {
         return el.id == contactId;
       });
       dataOut.length
-        ? console.table(dataOut)
-        : console.log(`Перепрошую, під ID [${contactId}] запис не знайдено`);
+        ? dataOut
+        : dataOut = false;
     } else {
-      console.log(this.error);
+      dataOut = this.error;
     }
+    return dataOut
   };
 
   removeContact = async (contactId) => {
     if ((await this.getFile()) && !this.error) {
       const findIdx = this.data.findIndex((el) => el.id == contactId);
       if (findIdx < 0) {
-        console.log(`Перепрошую, під ID [${contactId}] запис не знайдено`);
+        return false;
       } else {
         const contact = JSON.stringify(this.data[findIdx]);
         this.data.splice(findIdx, 1);
-        console.log(`Запис ${contact} видалено`);
-        console.log(await this.rewriteFile(JSON.stringify(this.data)));
+        // console.log(await this.rewriteFile(JSON.stringify(this.data)));
+        return await this.rewriteFile(JSON.stringify(this.data))
       }
     } else {
-      console.log(this.error);
+      return this.error
     }
   };
 
   addContact = async (name, email, phone) => {
+    let dataOut = null;
     if ((await this.getFile()) && !this.error) {
       //щоб не брати відносно довжини, так як довжину будемо змінювати
       const createNewId = +this.data[this.data.length - 1].id + 1;
@@ -117,12 +122,43 @@ class ContactsDemon {
           phone,
         },
       ];
-      console.log(await this.rewriteFile(JSON.stringify(createNewData)));
-      console.log(`Зипису було присвоєно ID [${createNewId}]`);
+      if(await this.rewriteFile(JSON.stringify(createNewData))) {
+        dataOut = {
+          "id" : createNewId,
+          "name": name,
+          "email" : email,
+          "phone" : phone
+        }
+        return dataOut
+      } else {
+        dataOut = 'Помилка ЗАПИСУ файла';
+        return dataOut
+      }
     } else {
-      console.log(this.error);
+      dataOut = 'Помилка ЧИТАННЯ файла';
+      return dataOut
     }
   };
+
+  updateContact = async (contactId, body) => {
+    let objOut = null;
+    if ((await this.getFile()) && !this.error) {
+      const newData = this.data.map(el => {
+        if(el.id === contactId){
+          objOut = {...el, ...body}
+          return el = {...el, ...body}
+        }
+        return el 
+      })
+      //наслідки захисту від перезапису не зміненого масиву
+      this.dataLength = --this.dataLength
+      if(await this.rewriteFile(JSON.stringify(newData))) {
+        return objOut
+      } else {
+        return false
+      }
+    }
+  }
 }
 
 export { ContactsDemon };
