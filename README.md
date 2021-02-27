@@ -1,4 +1,4 @@
-# goit-nodejs-hw-01
+# goit-nodejs-hw-03
 GoIT homework
 
-Скрини домашки в папці /images
+
