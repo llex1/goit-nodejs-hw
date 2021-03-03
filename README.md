@@ -1,4 +1,4 @@
-# goit-nodejs-hw-03
+# goit-nodejs-hw
 GoIT homework
 
 
