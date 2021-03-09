@@ -1,3 +1,0 @@
-PORT='8080'
-URL_MONGO=mongodb+srv://root:lqR42UqJziDncUZZ@cluster0.4mkof.mongodb.net/db-contacts?retryWrites=true&w=majority
-DB_NAME=db-contacts

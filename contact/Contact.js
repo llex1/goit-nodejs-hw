@@ -1,14 +1,23 @@
 const mongoose = require("mongoose");
-const ContactSchema = require("./Contact.schema");
+const mongoosePaginate = require("mongoose-paginate-v2");
+const contactSchema = require("./Contact.schema");
+
+contactSchema.plugin(mongoosePaginate);
 
 class Contact {
   model = this.initModel();
 
   async initModel() {
-    this.model = await mongoose.model("contact", ContactSchema);
+    this.model = await mongoose.model("contact", contactSchema);
   }
-  getAll() {
+  getAll(obj) {
+    if (obj) {
+      return this.model.paginate({}, obj);
+    }
     return this.model.find();
+  }
+  getAllBySubscription(param) {
+    return this.model.find({ subscription: { $eq: param } });
   }
   getById(contactId) {
     return this.model.findById(contactId);

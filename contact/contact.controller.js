@@ -2,7 +2,13 @@ const contactModel = require("./Contact");
 
 class ContactController {
   async getAll(req, res, next) {
-    res.json(await contactModel.getAll());
+    if (!!req.query.page) {
+      res.json((await contactModel.getAll(req.query)).docs);
+    } else if (!!req.query.sub) {
+      res.json(await contactModel.getAllBySubscription(req.query.sub));
+    } else {
+      res.json(await contactModel.getAll());
+    }
   }
   async getById(req, res, next) {
     const { contactId } = req.params;

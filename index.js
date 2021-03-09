@@ -4,6 +4,9 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 const mongoose = require("mongoose");
 //app module
+const validate = require('./helpers/validate');
+const authRouter = require("./auth/auth.routes");
+const userRouter = require('./user/user.routes');
 const contactRouter = require("./contact/contact.routes");
 
 class Server {
@@ -29,7 +32,9 @@ class Server {
     );
   }
   initRoutes() {
-    this.server.use("/contacts", contactRouter);
+    this.server.use("/auth", authRouter);
+    this.server.use("/users", validate.token, userRouter);
+    this.server.use("/contacts", validate.token, contactRouter);
     this.server.use("/", express.static(__dirname + "/public/"));
   }
   async initDb() {
